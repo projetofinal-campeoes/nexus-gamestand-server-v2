@@ -10,6 +10,7 @@ from . import views
 
 urlpatterns = [
     path("login/", jwt_views.TokenObtainPairView.as_view()),
+    path("users/", views.UserView.as_view()),
     path("users/<int:pk>/", views.UserDetailView.as_view()),
     path("docs/", SpectacularAPIView.as_view(), name="schema"),
     path(
