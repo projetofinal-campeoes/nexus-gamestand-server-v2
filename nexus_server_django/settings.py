@@ -11,11 +11,12 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 
-from pathlib import Path
-from datetime import timedelta
 import os
-import dotenv
+from datetime import timedelta
+from pathlib import Path
+
 import dj_database_url
+import dotenv
 
 dotenv.load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -98,16 +99,16 @@ WSGI_APPLICATION = 'nexus_server_django.wsgi.application'
     }
 }
  """
- 
+
 DATABASES = {
-  "default": {      
-      "ENGINE": "django.db.backends.postgresql",
-      "NAME": os.getenv("POSTGRES_DB"),
-      "USER": os.getenv("POSTGRES_USER"),
-      "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-      "HOST": "127.0.0.1",
-      "PORT": 5432,
-  }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": "127.0.0.1",
+        "PORT": 5432,
+    }
 }
 
 # Password validation
@@ -133,7 +134,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 
-REST_FRAMEWORK = {    
+REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
