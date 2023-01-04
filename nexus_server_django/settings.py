@@ -52,7 +52,8 @@ THIRD_PARTY_APPS = [
 
 MY_APPS = [
     "users",
-    "custom_games"
+    "custom_games",
+    "promotions",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
