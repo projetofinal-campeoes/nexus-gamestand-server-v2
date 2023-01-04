@@ -1,13 +1,16 @@
 from rest_framework import serializers
 from .models import CustomGames
+from rest_framework.validators import UniqueValidator
 
 
 class CustomGamesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomGames
-        fields = ('id', 'name', 'image_url', 'platform')
+        fields = ('id', 'name', 'image_url', 'platform', 'user_id')
+        unique_together = ('name', 'platform')
         extra_kwargs = {
             'id': {'read_only': True},
+            'user_id': {'read_only': True},
         }
 
     def create(self, validated_data):
