@@ -54,6 +54,7 @@ THIRD_PARTY_APPS = ["rest_framework", "drf_spectacular"]
 MY_APPS = [
     "users",
     "custom_games",
+    "bug_report"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
