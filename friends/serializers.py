@@ -1,6 +1,4 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
-from django.shortcuts import get_object_or_404
 from .models import Friend
 from users.models import User
 
@@ -27,8 +25,8 @@ class FriendSerializer(serializers.ModelSerializer):
     def create(self, validated_data: dict) -> Friend:
         username = validated_data.pop("username")
 
-        friend = get_object_or_404(User, username=username)
+        friend = User.objects.get(username=username)
 
         validated_data["friend_id"] = friend.id
         validated_data["friend_name"] = friend.username
-        return Friend.objects.create()
+        return Friend.objects.create(**validated_data)
