@@ -37,8 +37,6 @@ class PromotionSerializer(serializers.ModelSerializer):
 
     def update(self, instance: Promotion, validated_data: dict) -> Promotion:
 
-        """  promotion_obj = Promotion.objects.get(id=self.kwargs['promotion_id']) """
-        """ ipdb.set_trace() """
         for key, value in validated_data.items():
             setattr(instance, key, value)
         

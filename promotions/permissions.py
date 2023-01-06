@@ -6,4 +6,7 @@ import ipdb
 
 class AccountOwner(permissions.BasePermission):
     def has_object_permission(self, request: Request, view: View, obj: User) -> bool:
-        return request.user.is_authenticated and obj == request.user
+        if (request.user.is_authenticated and obj == request.user) or (request.user.is_authenticated and request.user.id == obj.user_id):
+            return True
+
+        return False
