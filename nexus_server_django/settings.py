@@ -54,7 +54,8 @@ THIRD_PARTY_APPS = ["rest_framework", "drf_spectacular"]
 MY_APPS = [
     "users",
     "custom_games",
-    "bug_report"
+    "bug_report",
+    "friends",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
@@ -104,14 +105,6 @@ WSGI_APPLICATION = "nexus_server_django.wsgi.application"
 
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB"),
-        "USER": os.getenv("POSTGRES_USER"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": "127.0.0.1",
-        "PORT": 5432,
-    },
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("POSTGRES_DB"),
