@@ -1,0 +1,7 @@
+openapi: 3.0.3
+info:
+  title: Nexus GameStand API
+  version: 1.0.0
+  description: Plataforma de centralização de jogos
+paths: {}
+components: {}
