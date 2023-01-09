@@ -28,15 +28,17 @@ class FriendView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class FriendDetailView(generics.ListAPIView, generics.DestroyAPIView):
+class FriendDetailView(generics.RetrieveAPIView, generics.DestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [UserAddedExists, DeleteOwnAccount]
 
     serializer_class = FriendSerializer
     queryset = Friend.objects.all()
 
-    def get_queryset(self):
-        return Friend.objects.filter(friend_id=self.kwargs[self.lookup_field])
+    def retrieve(self, request, *args, **kwargs):
+        instance = Friend.objects.get(friend_id=self.kwargs[self.lookup_field])
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = Friend.objects.filter(friend_id=self.kwargs[self.lookup_field])
