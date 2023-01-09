@@ -7,11 +7,24 @@ import ipdb
 class PromotionSerializer(serializers.ModelSerializer):
 
     shiny_meter = serializers.SerializerMethodField()
+    shiny_quant = serializers.SerializerMethodField()
 
     class Meta:
         model = Promotion
-        fields = ["id", "name", "price", "promo_url", "description", "user_id", "shiny_meter"]
+        fields = ["id", "name", "price", "promo_url", "description", "user_id", "shiny_meter", "shiny_quant"]
         read_only_fields = ["description"]
+
+    
+    def get_shiny_quant(self, instance: Rate_log):
+
+        promotion_obj = Promotion.objects.all()
+
+        count = 0
+        for dict_promo in promotion_obj:
+            for dict in dict_promo.rate.values():
+                count += 1
+
+        return count
 
     
     def get_shiny_meter(self, instance: Rate_log):
@@ -20,12 +33,17 @@ class PromotionSerializer(serializers.ModelSerializer):
 
         positive_like = 0
         negative_like = 0
+
         if len(rates) == 0:
             return 0
 
-        for key, value in rates.like.items():
-            if key:
-                positive_like = key
+        for dict in rates:
+            if dict.like:
+                positive_like += 1
+            else:
+                negative_like += 1
+        
+        return positive_like - negative_like
 
 
     def create(self, validated_data: dict) -> Promotion:
