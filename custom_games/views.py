@@ -1,8 +1,8 @@
 from .models import CustomGames
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from .serializers import CustomGamesSerializer
-from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from .permissions import IsAccountOwner
+from .serializers import CustomGamesSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 
 
 class ListGameView(ListAPIView):
