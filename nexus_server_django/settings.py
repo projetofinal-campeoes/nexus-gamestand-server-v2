@@ -54,6 +54,8 @@ THIRD_PARTY_APPS = ["rest_framework", "drf_spectacular"]
 MY_APPS = [
     "users",
     "custom_games",
+    "promotions",
+    "rate_log",
     "bug_report",
     "friends",
 ]
