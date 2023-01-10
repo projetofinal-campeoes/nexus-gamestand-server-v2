@@ -2,6 +2,8 @@ from django.db import models
 import uuid
 
 class PageChoices(models.TextChoices):
+    LOGIN = 'Login'
+    REGISTER = 'Register'
     HOME = 'Home'
     PROFILE = 'Profile'
     GAMES = 'Games'

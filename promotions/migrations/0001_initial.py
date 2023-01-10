@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="CustomGames",
+            name="Promotion",
             fields=[
                 (
                     "id",
@@ -23,9 +23,10 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("name", models.CharField(max_length=23)),
-                ("image_url", models.TextField()),
-                ("platform", models.CharField(max_length=16)),
+                ("name", models.CharField(max_length=64)),
+                ("price", models.DecimalField(decimal_places=2, max_digits=5)),
+                ("promo_url", models.TextField()),
+                ("description", models.CharField(max_length=256)),
             ],
         ),
     ]
