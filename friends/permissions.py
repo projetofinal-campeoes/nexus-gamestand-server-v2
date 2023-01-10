@@ -1,9 +1,23 @@
 from rest_framework import permissions
 from rest_framework.views import Request, View
+from django.http import Http404
 from rest_framework.exceptions import ValidationError
 
 from .models import Friend
 from users.models import User
+
+from rest_framework.exceptions import APIException
+from rest_framework import status
+
+
+class GenericAPIException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = "error"
+
+    def __init__(self, detail, status_code=None):
+        self.detail = detail
+        if status_code is not None:
+            self.status_code = status_code
 
 
 class UserExists(permissions.BasePermission):
@@ -15,9 +29,9 @@ class UserExists(permissions.BasePermission):
 
         if friend:
             return True
-        raise ValidationError(
-            detail={"detail": "User not found"},
-            code=404,
+        raise GenericAPIException(
+            detail={"detail": "User not found."},
+            status_code=404,
         )
 
 
@@ -28,9 +42,9 @@ class AddAccountOwner(permissions.BasePermission):
 
         if not req.data["username"] == req.user.username:
             return True
-        raise ValidationError(
+        raise GenericAPIException(
             detail={"detail": "Not able to add own account."},
-            code=400,
+            status_code=400,
         )
 
 
@@ -43,9 +57,9 @@ class AddAccountDuplicated(permissions.BasePermission):
 
         if not friend:
             return True
-        raise ValidationError(
+        raise GenericAPIException(
             detail={"detail": "User already added."},
-            code=400,
+            status_code=400,
         )
 
 
@@ -58,9 +72,9 @@ class UserAddedExists(permissions.BasePermission):
 
         if friend:
             return True
-        raise ValidationError(
+        raise GenericAPIException(
             detail={"detail": "This user is not added."},
-            code=400,
+            status_code=404,
         )
 
 
@@ -73,7 +87,7 @@ class DeleteOwnAccount(permissions.BasePermission):
 
         if friend:
             return True
-        raise ValidationError(
+        raise GenericAPIException(
             detail={"detail": "User not Found."},
-            code=404,
+            status_code=404,
         )

@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework.views import Response, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .permissions import (
@@ -16,7 +17,12 @@ from .models import Friend
 
 class FriendView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [UserExists, AddAccountOwner, AddAccountDuplicated]
+    permission_classes = [
+        IsAuthenticated,
+        UserExists,
+        AddAccountOwner,
+        AddAccountDuplicated,
+    ]
 
     serializer_class = FriendSerializer
     queryset = Friend.objects.all()
@@ -30,7 +36,7 @@ class FriendView(generics.ListCreateAPIView):
 
 class FriendDetailView(generics.RetrieveAPIView, generics.DestroyAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [UserAddedExists, DeleteOwnAccount]
+    permission_classes = [IsAuthenticated, UserAddedExists, DeleteOwnAccount]
 
     serializer_class = FriendSerializer
     queryset = Friend.objects.all()
