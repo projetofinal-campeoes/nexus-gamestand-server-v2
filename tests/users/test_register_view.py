@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase
 from rest_framework.views import status
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
-
+from tests.factories import create_user_with_token, create_user_with_token_no_admin
 
 User: AbstractUser = get_user_model()
 
@@ -11,6 +11,12 @@ class UserCreationViewTest(APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         cls.BASE_URL = "/api/users/"
+
+        cls.user, token_no_admin = create_user_with_token_no_admin()
+        cls.access_token_no_admin = str(token_no_admin.access_token)
+
+        cls.user_2, token = create_user_with_token()
+        cls.access_token = str(token.access_token)
 
         # UnitTest Longer Logs
         cls.maxDiff = None
@@ -132,112 +138,159 @@ class UserCreationViewTest(APITestCase):
         )
         self.assertEqual(expected_status_code, result_status_code, msg)
 
-    # def test_update_user_with_correct_user_token(self):
-    #     info_to_patch = {
-    #         "username": "lucira_buster_5000",
-    #         "email": "lucira_buster_5000@kenziebuster.com",
-    #         "first_name": "Lucira5000",
-    #         "last_name": "Buster5000",
-    #     }
-    #     self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-    #     response = self.client.patch(self.BASE_URL, data=info_to_patch, format="json")
+    def test_retrieve_users(self):
+        response = self.client.get(self.BASE_URL, format="json")
 
-    #     # STATUS CODE
-    #     expected_status_code = status.HTTP_200_OK
-    #     resulted_status_code = response.status_code
-    #     msg = (
-    #         "Verifique se o status code retornado do PATCH com token correto "
-    #         + f"em `{self.BASE_URL}` é {expected_status_code}"
-    #     )
-    #     self.assertEqual(expected_status_code, resulted_status_code, msg)
+        # STATUS CODE
+        expected_status_code = status.HTTP_200_OK
+        resulted_status_code = response.status_code
+        msg = (
+            "Verifique se o status code retornado do GET com token correto "
+            + f"em `{self.BASE_URL}` é {expected_status_code}"
+        )
+        self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-    #     # RETORNO JSON
-    #     expected_data = {
-    #         "id": self.user_1.pk,
-    #         "username": info_to_patch["username"],
-    #         "email": info_to_patch["email"],
-    #         "first_name": info_to_patch["first_name"],
-    #         "last_name": info_to_patch["last_name"],
-    #         "is_superuser": self.user_1.is_superuser,
-    #     }
-    #     resulted_data = response.json()
-    #     msg = (
-    #         "Verifique se os dados retornados do PATCH com token correto em "
-    #         + f"em `{self.BASE_URL}` é {expected_data}"
-    #     )
-    #     self.assertDictEqual(expected_data, resulted_data, msg)
+        # RETORNO JSON
+        expected_data = [
+            {
+                "id": str(self.user.pk),
+                "username": "nexus_teste_no_admin",
+                "email": "nexus_teste_no_admin@nexus.com",
+                "avatar_url": "",
+                "status": True,
+                "steam_user": "",
+                "gamepass": False,
+            },
+            {
+                "id": str(self.user_2.pk),
+                "username": "nexus_teste",
+                "email": "nexus_teste@nexus.com",
+                "avatar_url": "",
+                "status": True,
+                "steam_user": "",
+                "gamepass": False,
+            },
+        ]
 
-    # def test_update_user_without_token(self):
-    #     response = self.client.patch(self.BASE_URL, format="json")
+        resulted_data = response.json()
+        msg = (
+            "Verifique se os dados retornados do GET com token correto em "
+            + f"em `{self.BASE_URL}` é {expected_data}"
+        )
+        self.assertEqual(expected_data, resulted_data, msg)
 
-    #     # STATUS CODE
-    #     expected_status_code = status.HTTP_401_UNAUTHORIZED
-    #     resulted_status_code = response.status_code
-    #     msg = (
-    #         "Verifique se o status code retornado do PATCH sem token "
-    #         + f"em `{self.BASE_URL}` é {expected_status_code}"
-    #     )
-    #     self.assertEqual(expected_status_code, resulted_status_code, msg)
+    def test_update_user_with_correct_user_token(self):
+        info_to_patch = {
+            "username": "marchi",
+        }
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token)
+        response = self.client.patch(
+            f"{self.BASE_URL}{self.user.pk}/", data=info_to_patch, format="json"
+        )
 
-    #     # RETORNO JSON
-    #     expected_data = {"detail": "Authentication credentials were not provided."}
-    #     resulted_data = response.json()
-    #     msg = (
-    #         "Verifique se os dados retornados do PATCH sem token "
-    #         + f"em `{self.BASE_URL}` é {expected_data}"
-    #     )
-    #     self.assertDictEqual(expected_data, resulted_data, msg)
+        # STATUS CODE
+        expected_status_code = status.HTTP_200_OK
+        resulted_status_code = response.status_code
+        msg = (
+            "Verifique se o status code retornado do PATCH com token correto "
+            + f"em `{self.BASE_URL}{self.user.pk}/` é {expected_status_code}"
+        )
+        self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-    # def test_delete_user_with_correct_user_token(self):
-    #     self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-    #     response = self.client.delete(self.BASE_URL, format="json")
+        # RETORNO JSON
+        expected_data = {
+            "id": str(self.user.pk),
+            "username": "marchi",
+            "email": "nexus_teste_no_admin@nexus.com",
+            "avatar_url": "",
+            "status": True,
+            "steam_user": "",
+            "gamepass": False,
+        }
+        resulted_data = response.json()
+        msg = (
+            "Verifique se os dados retornados do PATCH com token correto em "
+            + f"em `{self.BASE_URL}{self.user.pk}/` é {expected_data}"
+        )
+        self.assertDictEqual(expected_data, resulted_data, msg)
 
-    #     # STATUS CODE
-    #     expected_status_code = status.HTTP_204_NO_CONTENT
-    #     resulted_status_code = response.status_code
-    #     msg = (
-    #         "Verifique se o status code retornado do DELETE com token correto "
-    #         + f"em `{self.BASE_URL}` é {expected_status_code}"
-    #     )
-    #     self.assertEqual(expected_status_code, resulted_status_code, msg)
+    def test_update_user_without_token(self):
+        response = self.client.patch(f"{self.BASE_URL}{self.user.pk}/", format="json")
 
-    # def test_delete_user_without_token(self):
-    #     response = self.client.delete(self.BASE_URL, format="json")
+        # STATUS CODE
+        expected_status_code = status.HTTP_401_UNAUTHORIZED
+        resulted_status_code = response.status_code
+        msg = (
+            "Verifique se o status code retornado do PATCH sem token "
+            + f"em `{self.BASE_URL}{self.user.pk}/` é {expected_status_code}"
+        )
+        self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-    #     # STATUS CODE
-    #     expected_status_code = status.HTTP_405_METHOD_NOT_ALLOWED
-    #     resulted_status_code = response.status_code
-    #     msg = (
-    #         "Verifique se o status code retornado do DELETE sem token "
-    #         + f"em `{self.BASE_URL}` é {expected_status_code}"
-    #     )
-    #     self.assertEqual(expected_status_code, resulted_status_code, msg)
+        # RETORNO JSON
+        expected_data = {"detail": "Authentication credentials were not provided."}
+        resulted_data = response.json()
+        msg = (
+            "Verifique se os dados retornados do PATCH sem token "
+            + f"em `{self.BASE_URL}{self.user.pk}/` é {expected_data}"
+        )
+        self.assertDictEqual(expected_data, resulted_data, msg)
 
-    #     # RETORNO JSON
-    #     expected_data = {"detail": "Authentication credentials were not provided."}
-    #     resulted_data = response.json()
-    #     msg = (
-    #         "Verifique se os dados retornados do DELETE sem token "
-    #         + f"em `{self.BASE_URL}` é {expected_data}"
-    #     )
-    #     self.assertDictEqual(expected_data, resulted_data, msg)
+    def test_delete_user_with_correct_user_token(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + self.access_token_no_admin
+        )
+        response = self.client.delete(f"{self.BASE_URL}{self.user.pk}/", format="json")
 
-    # def test_delete_user_with_another_user_token(self):
-    #     self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_2)
-    #     response = self.client.delete(self.BASE_URL, format="json")
+        # STATUS CODE
+        expected_status_code = status.HTTP_204_NO_CONTENT
+        resulted_status_code = response.status_code
+        msg = (
+            "Verifique se o status code retornado do DELETE com token correto "
+            + f"em `{self.BASE_URL}{self.user.pk}/` é {expected_status_code}"
+        )
+        self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-    #     # STATUS CODE
-    #     expected_status_code = status.HTTP_403_FORBIDDEN
-    #     resulted_status_code = response.status_code
-    #     msg = (
-    #         "Verifique se o status code retornado do DELETE sem token correto "
-    #         + f"em `{self.BASE_URL}` é {expected_status_code}"
-    #     )
-    #     self.assertEqual(expected_status_code, resulted_status_code, msg)
+    def test_delete_user_without_token(self):
+        response = self.client.delete(f"{self.BASE_URL}{self.user.pk}/", format="json")
 
-    #     expected_message = {
-    #         "detail": "You do not have permission to perform this action."
-    #     }
-    #     resulted_message = response.json()
-    #     msg = f"Verifique se a mensagem retornada do DELETE em {self.BASE_URL} está correta"
-    #     self.assertDictEqual(expected_message, resulted_message, msg)
+        # STATUS CODE
+        expected_status_code = status.HTTP_401_UNAUTHORIZED
+        resulted_status_code = response.status_code
+        msg = (
+            "Verifique se o status code retornado do DELETE sem token "
+            + f"em `{self.BASE_URL}{self.user.pk}/` é {expected_status_code}"
+        )
+        self.assertEqual(expected_status_code, resulted_status_code, msg)
+
+        # RETORNO JSON
+        expected_data = {"detail": "Authentication credentials were not provided."}
+        resulted_data = response.json()
+        msg = (
+            "Verifique se os dados retornados do DELETE sem token "
+            + f"em `{self.BASE_URL}{self.user.pk}/` é {expected_data}"
+        )
+        self.assertDictEqual(expected_data, resulted_data, msg)
+
+    def test_delete_another_user_without_admin(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + self.access_token_no_admin
+        )
+        response = self.client.delete(
+            f"{self.BASE_URL}{self.user_2.pk}/", format="json"
+        )
+
+        # STATUS CODE
+        expected_status_code = status.HTTP_403_FORBIDDEN
+        resulted_status_code = response.status_code
+        msg = (
+            "Verifique se o status code retornado do DELETE sem token correto "
+            + f"em `{self.BASE_URL}{self.user.pk}/` é {expected_status_code}"
+        )
+        self.assertEqual(expected_status_code, resulted_status_code, msg)
+
+        expected_message = {
+            "detail": "You do not have permission to perform this action."
+        }
+        resulted_message = response.json()
+        msg = f"Verifique se a mensagem retornada do DELETE em `{self.BASE_URL}{self.user.pk}/` está correta"
+        self.assertDictEqual(expected_message, resulted_message, msg)
