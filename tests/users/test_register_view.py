@@ -34,7 +34,6 @@ class UserCreationViewTest(APITestCase):
 
         response = self.client.post(self.BASE_URL, data=user_data, format="json")
 
-        added_user = User.objects.last()
         # # RETORNO JSON
         returned_keys = set(response.json().keys())
 
